@@ -7,178 +7,26 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.geom.Rectangle2D;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.Timer;
-import javax.swing.event.ChangeListener;
-import org.jlab.clas.fcmon.RichView;
-import org.jlab.clas.fcmon.RichView.RICHtile;
-import org.jlab.clas.fcmon.rich.RichHitCollection.RichHit;
-import org.jlab.detector.view.DetectorShape2D;
-import org.jlab.groot.base.TColorPalette;
-import org.jlab.clas.fcmon.RICHMon;
-
-
-import org.jlab.clas.fcmon.rich.RichPlotOccupancy;
-import org.jlab.clas.fcmon.*;
-
-import java.util.Random;
-
-
-
 public class RICHmonitor  extends DetectorMonitor {
-
+        
+    
     public RICHmonitor(String name) {
         super(name);
-
-        this.setDetectorTabNames("Scalers");
+        
+        this.setDetectorTabNames("Rich Occupancy","Occupancies and spectra");
         this.init(false);
-
     }
 
     @Override
     public void createHistos() {
-      this.getDetectorCanvas().getCanvas("Scalers").setGridX(false);
-      this.getDetectorCanvas().getCanvas("Scalers").setGridY(false);
-      this.getDetectorCanvas().getCanvas("Scalers").divide(1, 2);
-    //  this.getDetectorCanvas().getCanvas("Occupancies and spectra").setAxisFontSize(0);
-
-        H2F RichScaler = new H2F("RichScaler", "RichScaler",261, 0, 261, 207, 0, 207);
-        H2F PmtScaler = new H2F("PmtScaler", "PmtScaler", 391, 0, 391 , 1000, 0 , 1000);
-        DataGroup dg = new DataGroup(2,2);
-        dg.addDataSet(RichScaler, 0);
-        dg.addDataSet(PmtScaler, 0);
-        this.getDataGroup().add(dg,0,0,0);
-
-
-
-
-       int row = 23;
-        double col= 0;
-        int count = 28; // # of pmts per row decreasing by row
-        int rowTemp =0; //temps used to count to 9 then places a space between PMTs
-        int colTemp =0;
-        int pmt=391;
-
-
-        for(int  rowNum = 23*8 +23; rowNum> 0; rowNum--){ //# of rows * 8 + spaces in between rows
-
-            int layer = rowNum;
-            double  comp = 0;
-            double colStart = col; //reset column
-
-
-             if(rowTemp == 9){
-              rowTemp =0;
-              //pmt--;
-              //System.out.print("pmt="+pmt);
-            } else {
-
-              for(int colNum = 0; colNum != count*8.0+count+9;colNum++){ // count = number of column; count * 8 + count + 9
-
-
-               if(colTemp ==9) { // adds a space between PMTs
-                  colTemp =0;
-              }  else {
-                  comp = col  + colNum;
-                  this.getDataGroup().getItem(0,0,0).getH2F("RichScaler").fill(comp*1.0,layer*1.0);
-                }
-                colTemp++;
-              }
-            }
-             pmt--;
-             System.out.print("pmt="+pmt);
-
-              col = colStart;
-              if((rowNum) %  9== 0 && rowNum != 25*8){
-                col +=4.5;
-                count--;
-                //pmt--;
-                //System.out.print("pmt="+pmt);                
-              }
-
-            rowTemp++;
-            pmt--;
-            System.out.print("pmt="+pmt);  
-      	}
-
-         /*
-         fillTile(65,12);
-         fillTile(72,12);
-         fillTile(80,12);
-         fillTile(88,12);
-         fillTile(96,12);
-         fillTile(104,12);
-         fillTile(112,12);
-         fillTile(120,12);
-         fillTile(128,12);     
-         fillTile(16,12);
-         fillTile(24,12);
-         fillTile(32,12);
-         fillTile(40,12);
-         fillTile(48,12);
-         fillTile(56,12);
-         fillTile(64,12);
-         */
-
-
-
-
-
-       Random rando = new Random();
-
-        for(int i =0; i < 10;i++){
-          int comp = rando.nextInt(192) + 1;
-          int layer = rando.nextInt(138) + 1;
-
-          System.out.println("component, Layer: " + comp + ", " + layer);
-
-          fillTile(comp,layer);
-
-        } //testing layer and component are in right location with 10 random numbers
-        /*
-        for(int i = 1; i <= 138; i++){
-          fillTile(1,i);
-          if(i==3||i==5||i==7||i==12||i==15||i==19||i==24||i==28||i==33||i==39||i==44||i==50||i==57||i==63||i==70||i==78||i==85||i==93||i==102||i==110||i==119||i==129||i==138){
-          	fillTile(128,i);
-          }
-          else{
-          	fillTile(192,i);
-          }
-        }
-
-
-*/
-
-
-
-
-    /*    // initialize canvas and create histograms
-      this.setNumberOfEvents(0);
+        // initialize canvas and create histograms
+        this.setNumberOfEvents(0);
         this.getDetectorCanvas().getCanvas("Occupancies and spectra").divide(1, 3);
         this.getDetectorCanvas().getCanvas("Occupancies and spectra").setGridX(false);
         this.getDetectorCanvas().getCanvas("Occupancies and spectra").setGridY(false);
+        
+        this.getDetectorCanvas().getCanvas("Rich Occupancy").setGridX(false);
+        this.getDetectorCanvas().getCanvas("Rich Occupancy").setGridY(false);
 
         H2F summary = new H2F("summary","summary",192, 0.5, 192.5, 138, 0.5, 138.5);
         summary.setTitleX("MAPMT channel");
@@ -187,7 +35,7 @@ public class RICHmonitor  extends DetectorMonitor {
         DataGroup sum = new DataGroup(1,1);
         sum.addDataSet(summary, 0);
         this.setDetectorSummary(sum);
-
+        
         H2F occTDC = new H2F("occTDC", "occTDC", 192, 0.5, 192.5, 138, 0.5, 138.5);
         occTDC.setTitleY("tile number");
         occTDC.setTitleX("channel number");
@@ -203,22 +51,144 @@ public class RICHmonitor  extends DetectorMonitor {
         tdc_trailing_edge.setTitleY("MAPMT (3 slots / tile)");
         tdc_trailing_edge.setTitle("TDC timing");
 
+        H2F rich = new H2F("rich","rich",261,0,261,207,0,207);
+        rich.setTitleX("X");
+        rich.setTitleY("Y");
+        rich.setTitle("RICH Occupancy");
+
         DataGroup dg = new DataGroup(2,2);
         dg.addDataSet(occTDC, 0);
         dg.addDataSet(tdc_leading_edge, 1);
         dg.addDataSet(tdc_trailing_edge, 1);
+        dg.addDataSet(rich,2);
         this.getDataGroup().add(dg,0,0,0);
-        */
-        int y = 0;
-        for(int n=0;n<391;n++){
-        	this.getDataGroup().getItem(0,0,0).getH2F("RichScaler").fill(n*1.0,y*1.0);
-        	y++;
-        }
+
+        int row = 23;
+        double col= 0;
+        int count = 28; // # of pmts per row decreasing by row
+        int rowTemp =0; //temps used to count to 9 then places a space between PMTs
+        int colTemp =0;
+
+        for(int  rowNum = 23*8 +23; rowNum> 0; rowNum--){ //# of rows * 8 + spaces in between rows
+
+            int numlayer = rowNum;
+            double  numcomp = 0;
+            double colStart = col; //reset column
+
+
+             if(rowTemp == 9){
+              rowTemp =0;
+            } else {
+
+              for(int colNum = 0; colNum != count*8.0+count+9;colNum++){ // count = number of column; count * 8 + count + 9
+
+
+               if(colTemp ==9) { // adds a space between PMTs
+                  colTemp =0;
+              }  else {
+                  numcomp = col  + colNum;
+                  this.getDataGroup().getItem(0,0,0).getH2F("rich").fill(numcomp*1.0,numlayer*1.0);
+                }
+                colTemp++;
+              }
+            }
+
+              col = colStart;
+              if((rowNum) %  9== 0 && rowNum != 25*8){
+                col +=4.5;
+                count--;        
+              }
+
+            rowTemp++;
+      	}
+
+    }
+        
+    @Override
+    public void plotHistos() {
+        // plotting histos
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(0);
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(0).getAxisZ().setLog(getLogZ());
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("occTDC"));
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(1);
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(1).getAxisZ().setLog(getLogZ());
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("tdc_leading_edge"));
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(2);
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(2).getAxisZ().setLog(getLogZ());
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("tdc_trailing_edge"));
+        this.getDetectorCanvas().getCanvas("Occupancies and spectra").update();
+
+
+        this.getDetectorCanvas().getCanvas("Rich Occupancy").draw(this.getDataGroup().getItem(0,0,0).getH2F("rich"));
+        this.getDetectorCanvas().getCanvas("Rich Occupancy").update();
+        
+        this.getDetectorView().getView().repaint();
+        this.getDetectorView().update();
     }
 
+    @Override
+    public void processEvent(DataEvent event) {
+        
 
+        if (this.getNumberOfEvents() >= super.eventResetTime_current && super.eventResetTime_current > 0){
+            resetEventListener();
+        }
+        
+		//if (!testTriggerMask()) return;
+        
+        // process event info and save into data group
+        if(event.hasBank("RICH::adc")==true){
+	    DataBank bank = event.getBank("RICH::adc");
+	    int rows = bank.rows();
+	    for(int loop = 0; loop < rows; loop++){
+                int sector  = bank.getByte("sector", loop);
+                int layer   = bank.getByte("layer", loop);
+                int comp    = bank.getShort("component", loop);
+                int order   = bank.getByte("order", loop);
+                int adc     = bank.getInt("ADC", loop);
+                float time  = bank.getFloat("time", loop);
+//                System.out.println("ROW " + loop + " SECTOR = " + sector + " LAYER = " + layer + " COMPONENT = " + comp + " ORDER + " + order +
+//                      " ADC = " + adc + " TIME = " + time); 
+                if(adc>0) {
+                    this.getDataGroup().getItem(0,0,0).getH2F("occADC").fill(comp*1.0,layer*1.0);
+                    this.getDataGroup().getItem(0,0,0).getH2F("adc").fill(adc*1.0, (comp-1)*138+layer);
+                }
+	    }
+    	}
+        if(event.hasBank("RICH::tdc")==true){
+            DataBank  bank = event.getBank("RICH::tdc");
+            int rows = bank.rows();
+            for(int i = 0; i < rows; i++){
+                int     sector = bank.getByte("sector",i);
+                int  layerbyte = bank.getByte("layer",i);
+                long     layer = layerbyte & 0xFF;
+                long      comp = bank.getShort("component",i);
+                long     pmt   = comp/64;
+                int        tdc = bank.getInt("TDC",i);
+                int  orderbyte = bank.getByte("order",i); // order specifies left-right for ADC
+                long     order = orderbyte & 0xFF;
 
-    public void fillTile(int comp,int layer){
+                
+                         // System.out.println("ROW " + i + " SECTOR = " + sector + " LAYER = " + layer + " COMPONENT = "+ comp + " TDC = " + TDC);    
+                if(tdc>0){ 
+                    this.getDataGroup().getItem(0,0,0).getH2F("occTDC").fill(comp,layer*1.0);
+                    fillTile(comp,layer);
+
+                    if(orderbyte == 1) this.getDataGroup().getItem(0,0,0).getH2F("tdc_leading_edge").fill(tdc, layer*3 + pmt);
+                    if(orderbyte == 0) this.getDataGroup().getItem(0,0,0).getH2F("tdc_trailing_edge").fill(tdc, layer*3 + pmt);
+
+                    
+                    this.getDetectorSummary().getH2F("summary").fill(comp,layer*1.0);
+                }
+            }
+        }        
+    }
+
+    @Override
+    public void timerUpdate() {
+
+    }
+    public void fillTile(long comp,long layer){
 
       int row = 0;
       int NumofTiles = 5;
@@ -279,13 +249,13 @@ public class RICHmonitor  extends DetectorMonitor {
             x += 3*9;
           }
         }
-/*
+
       if(layer == 3 || layer ==5 || layer ==7|| layer ==12 || layer ==15 || layer ==19 || layer ==24|| layer ==28 || layer ==33 ||layer ==39|| layer ==44 || layer ==50|| layer ==57|| layer ==63 || layer ==70 || layer ==78|| layer ==85 || layer ==93 || layer == 102|| layer == 110 || layer == 119 || layer ==129|| layer ==138){
       	if(comp >64 && comp < 129){
       		comp+=64;
       	}
       }
-      */
+      
 
 
       int y = row *  8 + row - 1;
@@ -339,7 +309,7 @@ public class RICHmonitor  extends DetectorMonitor {
             x+= (comp - 176);
             y-=7;
         }
-    }else {
+        }else {
         if(comp > 0 && comp < 25){
           x+= (comp - 1);
 
@@ -403,118 +373,7 @@ public class RICHmonitor  extends DetectorMonitor {
             if(comp - 169 >= 16)
               x++;
         }
+        this.getDataGroup().getItem(0,0,0).getH2F("rich").fill(x*1.0,y*1.0);
+      } 
     }
-
-
-
-    //  System.out.println("x = " + x);
-    //  System.out.println("y = " + y);
-/*
-    if(comp > 128 && (layer == 3 || layer ==5 || layer ==7|| layer ==12 || layer ==15|| layer ==19 || layer ==24|| layer ==28 || layer ==33)){
-
-    } else if ( comp > 128 && (layer ==39|| layer ==44 || layer ==50|| layer ==57|| layer ==63 || layer ==70|| layer ==78|| layer ==85 || layer ==93 || layer == 102|| layer == 110 || layer == 119 || layer ==129|| layer ==138)) {
-
-
-    } else if(layer %2 != 0){
-      this.getDataGroup().getItem(0,0,0).getH2F("RICH").fill(x,y);
-    }
-*/
-    this.getDataGroup().getItem(0,0,0).getH2F("RichScaler").fill(x,y);
-
-  }
-
-    @Override
-    public void plotHistos() {
-
-
-      this.getDetectorCanvas().getCanvas("Scalers").draw(this.getDataGroup().getItem(0,0,0).getH2F("RichScaler"));
-      this.getDetectorCanvas().getCanvas("Scalers").draw(this.getDataGroup().getItem(0,0,0).getH2F("PmtScaler"));
-
-
-
-
-      // plotting histos
-      /*  this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(0);
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(0).getAxisZ().setLog(getLogZ());
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("occTDC"));
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(1);
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(1).getAxisZ().setLog(getLogZ());
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("tdc_leading_edge"));
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").cd(2);
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").getPad(2).getAxisZ().setLog(getLogZ());
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").draw(this.getDataGroup().getItem(0,0,0).getH2F("tdc_trailing_edge"));
-        this.getDetectorCanvas().getCanvas("Occupancies and spectra").update();
-
-        this.getDetectorView().getView().repaint();
-        this.getDetectorView().update();*/
-    }
-
-    @Override
-    public void processEvent(DataEvent event) {
-
-
-
-
-
-/*
-
-        if (this.getNumberOfEvents() >= super.eventResetTime_current && super.eventResetTime_current > 0){
-            resetEventListener();
-        }
-
-		//if (!testTriggerMask()) return;
-
-        // process event info and save into data group
-        if(event.hasBank("RICH::adc")==true){
-	    DataBank bank = event.getBank("RICH::adc");
-	    int rows = bank.rows();
-	    for(int loop = 0; loop < rows; loop++){
-                int sector  = bank.getByte("sector", loop);
-                int layer   = bank.getByte("layer", loop);
-                int comp    = bank.getShort("component", loop);
-                int order   = bank.getByte("order", loop);
-                int adc     = bank.getInt("ADC", loop);
-                float time  = bank.getFloat("time", loop);
-//                System.out.println("ROW " + loop + " SECTOR = " + sector + " LAYER = " + layer + " COMPONENT = " + comp + " ORDER + " + order +
-//                      " ADC = " + adc + " TIME = " + time);
-                if(adc>0) {
-                    this.getDataGroup().getItem(0,0,0).getH2F("occADC").fill(comp*1.0,layer*1.0);
-                    this.getDataGroup().getItem(0,0,0).getH2F("adc").fill(adc*1.0, (comp-1)*138+layer);
-
-                }
-	    }
-    	}
-        if(event.hasBank("RICH::tdc")==true){
-            DataBank  bank = event.getBank("RICH::tdc");
-            int rows = bank.rows();
-            for(int i = 0; i < rows; i++){
-                int     sector = bank.getByte("sector",i);
-                int  layerbyte = bank.getByte("layer",i);
-                long     layer = layerbyte & 0xFF;
-                long      comp = bank.getShort("component",i);
-                long     pmt   = comp/64;
-                int        tdc = bank.getInt("TDC",i);
-                int  orderbyte = bank.getByte("order",i); // order specifies left-right for ADC
-                long     order = orderbyte & 0xFF;
-
-
-                         // System.out.println("ROW " + i + " SECTOR = " + sector + " LAYER = " + layer + " COMPONENT = "+ comp + " TDC = " + TDC);
-                if(tdc>0){
-                    this.getDataGroup().getItem(0,0,0).getH2F("occTDC").fill(comp,layer*1.0);
-
-                    if(orderbyte == 1) this.getDataGroup().getItem(0,0,0).getH2F("tdc_leading_edge").fill(tdc, layer*3 + pmt);
-                    if(orderbyte == 0) this.getDataGroup().getItem(0,0,0).getH2F("tdc_trailing_edge").fill(tdc, layer*3 + pmt);
-
-                    this.getDetectorSummary().getH2F("summary").fill(comp,layer*1.0);
-                }
-            }
-        }*/
-    }
-
-    @Override
-    public void timerUpdate() {
-
-    }
-
-
 }
